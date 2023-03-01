@@ -6,17 +6,11 @@ import ballerinax/mysql.driver as _;
 import ballerina/http;
 import ballerina/log;
 
-// configurable string password = ?; 
-// configurable string host = ?; 
-// configurable int port = ?; 
-// configurable string db = ?; 
-// configurable string username = ?;
-
-configurable string password = "wso2!234";
-configurable string host = "sahackathon.mysql.database.azure.com";
-configurable int port = 3306;
-configurable string db = "ramindu_db";
-configurable string username = "choreo";
+configurable string password = ?; 
+configurable string host = ?; 
+configurable int port = ?; 
+configurable string db = ?; 
+configurable string username = ?;
 
 type Item record {
     string ID;
