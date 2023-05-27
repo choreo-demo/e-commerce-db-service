@@ -6,18 +6,12 @@ import ballerinax/mysql.driver as _;
 import ballerina/http;
 import ballerina/log;
 
-// configurable string password = ?; 
-// configurable string host = ?; 
-// configurable int port = ?; 
-// configurable string db = ?; 
-// configurable string username = ?;
+configurable string password = ?; 
+configurable string host = ?; 
+configurable int port = ?; 
+configurable string db = ?; 
+configurable string username = ?;
 
-
-configurable string password = "rootroot"; 
-configurable string host = "34.171.110.167";
-configurable int port = 3306;
-configurable string db = "eComSiteForChoreoAsardeoAndBallerina";
-configurable string username = "root";
 
 type Item record {
     string ID;
