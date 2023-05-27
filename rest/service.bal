@@ -14,7 +14,7 @@ import ballerina/log;
 
 
 configurable string password = "rootroot"; 
-configurable string host = "1bc2-112-135-99-16.ngrok-free.app";
+configurable string host = "34.171.110.167";
 configurable int port = 3306;
 configurable string db = "eComSiteForChoreoAsardeoAndBallerina";
 configurable string username = "root";
@@ -49,14 +49,19 @@ service /rest on new http:Listener(9091) {
     private final mysql:Client dbClient;
 
     function init() returns error? {
-        log:printInfo("Cake API started", host = "0.0.0.0", port = port, protocol = "HTTP");
+        log:printInfo("Cake API started", host = "0.0.0.0", port = 9091, protocol = "HTTP");
         mysql:Options mysqlOptions = {
             ssl: {
                 mode: mysql:SSL_PREFERRED
             },
             connectTimeout: 10
         };
-        self.dbClient = check new (host = host, user = username, password = password, database = db, port = port, connectionPool = {maxOpenConnections: 3});
+        do {
+            self.dbClient = check new (host = host, user = username, password = password, database = db, port = port, connectionPool = {maxOpenConnections: 3});
+        } on fail var e {
+            log:printError("Error occurred while connecting to MySQL", e);
+        }
+        log:printInfo("Connected to database !");
     }
 
     resource function get menu() returns json|http:Ok|http:InternalServerError|error {
@@ -69,6 +74,10 @@ service /rest on new http:Listener(9091) {
     }
 
     resource function put item(@http:Payload map<json> jsonString) returns string {
+        return self.addOrEditItem(jsonString, true);
+    }
+
+    resource function delete item(@http:Payload map<json> jsonString) returns string {
         return self.addOrEditItem(jsonString, true);
     }
 
