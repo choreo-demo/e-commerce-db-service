@@ -70,10 +70,6 @@ service /ecom/rest on new http:Listener(9091) {
         return self.addOrEditItem(jsonString, true);
     }
 
-    resource function delete item(@http:Payload map<json> jsonString) returns string {
-        return self.addOrEditItem(jsonString, true);
-    }
-
     resource function post purchaseItems(@http:Payload map<json> mapJson) returns string {
         string itemList = <string>mapJson["itemList"];
         float total = <float>mapJson["total"];
@@ -197,7 +193,7 @@ service /ecom/rest on new http:Listener(9091) {
         }
     }
 
-    resource function delete deleteItem(map<json> mapJson) returns string {
+    resource function delete item(map<json> mapJson) returns string {
         io:println("items delete called: ");
         string id = <string>mapJson["id"];
         Item[] items = [];
