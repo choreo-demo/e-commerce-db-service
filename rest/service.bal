@@ -6,12 +6,11 @@ import ballerinax/mysql.driver as _;
 import ballerina/http;
 import ballerina/log;
 
-configurable string password = ?; 
-configurable string host = ?; 
-configurable int port = ?; 
-configurable string db = ?; 
+configurable string password = ?;
+configurable string host = ?;
+configurable int port = ?;
+configurable string db = ?;
 configurable string username = ?;
-
 
 type Item record {
     string ID;
@@ -38,7 +37,7 @@ type InsertExecutionResult record {
 //         maxAge: 84900
 //     }
 // }
-service /rest on new http:Listener(9091) {
+service /ecom/rest on new http:Listener(9091) {
 
     private final mysql:Client dbClient;
 
@@ -195,6 +194,34 @@ service /rest on new http:Listener(9091) {
             }
             io:println(items);
             return items;
+        }
+    }
+
+    resource function delete deleteItem(map<json> mapJson) returns string {
+        io:println("items delete called: ");
+        string id = <string>mapJson["id"];
+        Item[] items = [];
+        do {
+            // mysql:Client mysqlClients = check new ("sahackathon.mysql.database.azure.com", "choreo", "wso2!234", "db_name", 3306, connectionPool={maxOpenConnections: 3});
+            if (self.dbClient is jdbc:Client) {
+                do {
+                    // sql:ExecutionResult createTableResult = check self.dbClient->execute(`SELECT * FROM itemtable`);
+                    // io:println("DBClient OK: ", createTableResult);
+                    sql:ParameterizedQuery query = `DELETE FROM itemtable WHERE id = ${id};`;
+                    sql:ExecutionResult|sql:Error resultStream = self.dbClient->execute(query);
+                    if (resultStream is sql:ExecutionResult) {
+                        int? affectedRowCount = resultStream.affectedRowCount;
+                        if affectedRowCount is int {
+                            return "Successfully deleted the item";
+                        } else {
+                            return "Unable to delete the item";
+                        }
+                    }
+                } on fail var e {
+                    return"Exception occurred when inserting. " + e.message();
+                }
+            }
+            return"Exception occurred when deleting.";
         }
     }
 
