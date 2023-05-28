@@ -193,32 +193,35 @@ service /ecom/rest on new http:Listener(9091) {
         }
     }
 
-    resource function delete item(@http:Payload map<json> mapJson) returns string {
+    resource function delete item(string idstring) returns string {
         io:println("items delete called: ");
-        int id = <int>mapJson["id"];
-        Item[] items = [];
-        do {
-            // mysql:Client mysqlClients = check new ("sahackathon.mysql.database.azure.com", "choreo", "wso2!234", "db_name", 3306, connectionPool={maxOpenConnections: 3});
-            if (self.dbClient is jdbc:Client) {
-                do {
-                    // sql:ExecutionResult createTableResult = check self.dbClient->execute(`SELECT * FROM itemtable`);
-                    // io:println("DBClient OK: ", createTableResult);
-                    sql:ParameterizedQuery query = `DELETE FROM itemtable WHERE id = ${id};`;
-                    sql:ExecutionResult|sql:Error resultStream = self.dbClient->execute(query);
-                    if (resultStream is sql:ExecutionResult) {
-                        int? affectedRowCount = resultStream.affectedRowCount;
-                        if affectedRowCount is int {
-                            return "Successfully deleted the item";
-                        } else {
-                            return "Unable to delete the item";
+        int|error id = int:fromString(idstring);
+        if (id is int) {
+            Item[] items = [];
+            do {
+                // mysql:Client mysqlClients = check new ("sahackathon.mysql.database.azure.com", "choreo", "wso2!234", "db_name", 3306, connectionPool={maxOpenConnections: 3});
+                if (self.dbClient is jdbc:Client) {
+                    do {
+                        // sql:ExecutionResult createTableResult = check self.dbClient->execute(`SELECT * FROM itemtable`);
+                        // io:println("DBClient OK: ", createTableResult);
+                        sql:ParameterizedQuery query = `DELETE FROM itemtable WHERE id = ${id};`;
+                        sql:ExecutionResult|sql:Error resultStream = self.dbClient->execute(query);
+                        if (resultStream is sql:ExecutionResult) {
+                            int? affectedRowCount = resultStream.affectedRowCount;
+                            if affectedRowCount is int {
+                                return "Successfully deleted the item";
+                            } else {
+                                return "Unable to delete the item";
+                            }
                         }
+                    } on fail var e {
+                        return "Exception occurred when inserting. " + e.message();
                     }
-                } on fail var e {
-                    return"Exception occurred when inserting. " + e.message();
                 }
+                return "Exception occurred when deleting.";
             }
-            return"Exception occurred when deleting.";
         }
+        return "Exception occurred when converting the id from query param.";
     }
 
 }
