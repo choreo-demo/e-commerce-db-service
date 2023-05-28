@@ -193,7 +193,7 @@ service /ecom/rest on new http:Listener(9091) {
         }
     }
 
-    resource function delete item(map<json> mapJson) returns string {
+    resource function delete item(@http:Payload map<json> mapJson) returns string {
         io:println("items delete called: ");
         int id = <int>mapJson["id"];
         Item[] items = [];
