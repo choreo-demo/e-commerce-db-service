@@ -195,7 +195,7 @@ service /ecom/rest on new http:Listener(9091) {
 
     resource function delete item(map<json> mapJson) returns string {
         io:println("items delete called: ");
-        string id = <string>mapJson["id"];
+        int id = <int>mapJson["id"];
         Item[] items = [];
         do {
             // mysql:Client mysqlClients = check new ("sahackathon.mysql.database.azure.com", "choreo", "wso2!234", "db_name", 3306, connectionPool={maxOpenConnections: 3});
